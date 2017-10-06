@@ -72,21 +72,6 @@ View(ndata_list[3])
 View(ndata_list[4])
 View(ndata_list[5])
 
-remove_zero_cols <- function(df) {
-  rem_vec <- NULL
-  for(i in 1:ncol(df)){
-    this_sum <- summary(df[,i])
-    zero_test <- length(which(this_sum == 0))
-    if(zero_test == 6) {
-      rem_vec[i] <- names(df)[i]
-    }
-  }
-  features_to_remove <- rem_vec[!is.na(rem_vec)]
-  rem_ind <- which(names(df) %in% features_to_remove)
-  df <- df[,-rem_ind]
-  return(df)
-}
-
 Day1 <- remove_zero_cols(Day1)
 Day2 <- remove_zero_cols(Day2)
 Day3 <- remove_zero_cols(Day3)
