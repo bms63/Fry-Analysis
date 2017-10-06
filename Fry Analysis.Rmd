@@ -1,0 +1,103 @@
+---
+title: "Fry Analysis"
+author: "Ben Straub"
+date: "9/29/2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+setwd("/Users/benStraub/Desktop/580_consulting")
+library(readxl);library(XLConnect);library(dplyr)
+
+
+path <- read_xlsx("data.xlsx")
+
+data <- lapply(excel_sheets("data.xlsx"), read_xlsx, path = "data.xlsx")
+
+VD <- function(sheet){
+   View(data[sheet], title= paste(sheet, "sheet", sep=""))
+}
+
+VD(5)
+VD(10)
+# Day 1-5 has 33 columns and Day 6-10 has 20 columns of collected data
+
+for(i in 1:10){
+  View(data[i],title= paste("Day",i, sep=""))
+  }
+
+
+Day1 <- as.data.frame(data[1])
+Day2 <- as.data.frame(data[2])
+Day3 <- as.data.frame(data[3])
+Day4 <- as.data.frame(data[4])
+Day5 <- as.data.frame(data[5])
+Day6 <- as.data.frame(data[6])
+Day7 <- as.data.frame(data[7])
+Day8 <- as.data.frame(data[8])
+Day9 <- as.data.frame(data[9])
+Day10 <- as.data.frame(data[10])
+
+
+#colnames(Day1)[13] <- "allergies"
+#Day1$allergies <- as.factor(Day1$allergies)
+#nDay1 <- Day1[which(Day1$allergies==1 & Day1$Colds.or.Pregnancy==2 & Day1$Over.18==1),]
+#a<-dim(Day1)
+#b<-dim(nDay1)#6 people with allergies in Day 1 sample  
+
+Allergies <- function(x){
+  colnames(x)[13] <- "allergies"
+  nx <- x[which(x$allergies==1 & x$Colds.or.Pregnancy==2 & 
+                        x$Over.18==1),]
+a<-dim(x)[1]
+b<-dim(nx)[1]
+cat(paste("Orginal", a,"No Allergies", b,sep=","))
+}
+
+Allergies(Day1)# 6 people with allergies
+Allergies(Day2)# 4 people with allergies
+Allergies(Day3)# 4 people with allergies
+Allergies(Day4)# 10 people with allergies
+Allergies(Day5)# 20 people with allergies
+
+data_list <- list(Day1, Day2, Day3, Day4, Day5)
+
+ndata_list <- lapply(data_list, `[`,-1,-c(7:23))
+ndata_list <- lapply(ndata_list, `[`,-1,-c(4:5))
+ndata_list <- lapply(ndata_list, `[`,-1)
+
+View(ndata_list[1])
+View(ndata_list[2])
+View(ndata_list[3])
+View(ndata_list[4])
+View(ndata_list[5])
+
+remove_zero_cols <- function(df) {
+  rem_vec <- NULL
+  for(i in 1:ncol(df)){
+    this_sum <- summary(df[,i])
+    zero_test <- length(which(this_sum == 0))
+    if(zero_test == 6) {
+      rem_vec[i] <- names(df)[i]
+    }
+  }
+  features_to_remove <- rem_vec[!is.na(rem_vec)]
+  rem_ind <- which(names(df) %in% features_to_remove)
+  df <- df[,-rem_ind]
+  return(df)
+}
+
+Day1 <- remove_zero_cols(Day1)
+Day2 <- remove_zero_cols(Day2)
+Day3 <- remove_zero_cols(Day3)
+Day4 <- remove_zero_cols(Day4)
+Day5 <- remove_zero_cols(Day5)
+# Day6-Day10 do not have data collected on food allergies so no need to remove columns of zeroes.
+
+View(Day1)
+View(Day2)
+View(Day3)
+View(Day4)
+View(Day5)
+```
+
